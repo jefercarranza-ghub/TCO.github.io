@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCO Pro — Comparador Avanzado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-base:    #0b0f1a;
+            --bg-raised:  #111827;
+            --bg-card:    #1a2235;
+            --bg-input:   #0d1424;
+            --border:     rgba(255,255,255,0.07);
+            --border-med: rgba(255,255,255,0.12);
+            --text-1:     #f1f5f9;
+            --text-2:     #94a3b8;
+            --text-3:     #475569;
+            --blue:       #3b82f6;
+            --blue-dim:   rgba(59,130,246,0.12);
+            --green:      #10b981;
+            --green-dim:  rgba(16,185,129,0.10);
+            --red:        #ef4444;
+            --red-dim:    rgba(239,68,68,0.10);
+            --amber:      #f59e0b;
+            --radius:     8px;
+            --radius-sm:  5px;
+            --radius-lg:  12px;
+        }
+
+        html, body, #root { width: 100%; min-height: 100%; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-1);
+            line-height: 1.5;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Layout ── */
+        .app { max-width: 1440px; margin: 0 auto; padding: 40px 32px 80px; }
+
+        /* ── Header ── */
+        .header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .header-left { display: flex; flex-direction: column; gap: 6px; }
+        .header-eyebrow {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--blue);
+        }
+        .header-title {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--text-1);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+        .header-sub { font-size: 14px; color: var(--text-2); }
+        .header-badge {
+            background: var(--blue-dim);
+            border: 1px solid rgba(59,130,246,0.25);
+            color: var(--blue);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Panel grid ── */
+        .panel-row { display: grid; gap: 16px; margin-bottom: 16px; }
+        .panel-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .panel-row.cols-2 { grid-template-columns: 1fr 1fr; }
+
+        /* ── Card ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 20px;
+        }
+
+        /* ── Params bar ── */
+        .params-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            display: flex;
+            gap: 0;
+            align-items: flex-end;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .param-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+        .param-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); }
+        .param-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-med);
+            border-radius: var(--radius-sm);
+            color: var(--text-1);
+            padding: 9px 12px;
+            font-size: 14px;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+        .param-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        /* ── Equipment selector ── */
+        .equip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 8px;
+        }
+        .equip-btn {
+            background: var(--bg-input);
+            border: 1.5px solid var(--border);
+            color: var(--text-2);
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.15s ease;
+            line-height: 1.4;
+        }
+        .equip-btn:hover { border-color: var(--blue); color: var(--text-1); background: var(--blue-dim); }
+        .equip-btn.active {
+            background: var(--blue-dim);
+            border-color: var(--blue);
+            color: var(--text-1);
+            box-shadow: 0 0 0 1px var(--blue);
+        }
+        .equip-btn-brand { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue); margin-bottom: 4px; }
+        .equip-btn-name { font-size: 12px; font-weight: 600; margin-bottom: 3px; line-height: 1.3; }
+        .equip-btn-ppm { font-size: 11px; color: var(--text-3); }
+        .equip-count { font-size: 12px; color: var(--text-3); margin-top: 12px; }
+
+        /* ── Nav tabs ── */
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 28px;
+        }
+        .nav-tab {
+            padding: 12px 18px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-3);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            margin-bottom: -1px;
+            transition: color 0.15s;
+            white-space: nowrap;
+        }
+        .nav-tab:hover { color: var(--text-2); }
+        .nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+        /* ── KPI cards ── */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .kpi-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
+        .kpi-card.winner { border-color: rgba(16,185,129,0.35); border-left: 3px solid var(--green); }
+        .kpi-card-brand { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+        .kpi-card-name { font-size: 13px; font-weight: 600; color: var(--text-1); margin-bottom: 14px; line-height: 1.35; }
+        .kpi-card-amount { font-size: 34px; font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 4px; }
+        .kpi-card-amount.winner-val { color: var(--green); }
+        .kpi-card-amount.loser-val { color: var(--text-2); }
+        .kpi-card-label { font-size: 11px; color: var(--text-3); margin-bottom: 16px; }
+        .kpi-card-tco { font-size: 12px; color: var(--green); font-variant-numeric: tabular-nums; padding-top: 14px; border-top: 1px solid var(--border); }
+        .kpi-winner-badge {
+            position: absolute; top: 14px; right: 14px;
+            background: var(--green-dim);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: var(--green);
+            font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 3px 8px; border-radius: 20px;
+        }
+
+        /* ── Cost breakdown ── */
+        .breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .breakdown-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+        }
+        .breakdown-title { font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 14px; }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+        .breakdown-row:last-child { border-bottom: none; }
+        .breakdown-row-label { color: var(--text-2); }
+        .breakdown-row-val { font-family: 'Inter', monospace; font-variant-numeric: tabular-nums; color: var(--text-1); font-weight: 500; }
+        .breakdown-total-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0 0;
+            margin-top: 8px;
+            border-top: 1px solid var(--border-med);
+            font-weight: 700;
+        }
+        .breakdown-total-label { font-size: 13px; color: var(--text-1); }
+        .breakdown-total-val { font-size: 16px; font-variant-numeric: tabular-nums; color: var(--green); }
+
+        /* ── Bar chart ── */
+        .barchart-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .barchart-label { font-size: 12px; color: var(--text-2); width: 180px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .barchart-track { flex: 1; height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .barchart-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+        .barchart-val { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-1); font-weight: 600; width: 80px; text-align: right; flex-shrink: 0; }
+
+        /* ── Recommendation box ── */
+        .reco-box {
+            background: var(--green-dim);
+            border: 1px solid rgba(16,185,129,0.25);
+            border-left: 3px solid var(--green);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-top: 4px;
+        }
+        .reco-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+        .reco-text { font-size: 13px; color: var(--text-1); line-height: 1.6; }
+
+        /* ── Table ── */
+        .table-wrap { border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            background: rgba(59,130,246,0.06);
+            padding: 11px 14px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        thead th.num { text-align: right; }
+        tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: rgba(59,130,246,0.04); }
+        tbody tr.row-winner { background: rgba(16,185,129,0.04); }
+        tbody td { padding: 12px 14px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+        tbody td.num { text-align: right; }
+        tbody td.bold { font-weight: 600; color: var(--text-1); }
+        tbody td.winner-cell { color: var(--green); font-weight: 700; }
+        .rank-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 20px; height: 20px; border-radius: 50%;
+            font-size: 10px; font-weight: 700;
+        }
+        .rank-1 { background: var(--green-dim); color: var(--green); }
+        .rank-n { background: var(--bg-input); color: var(--text-3); }
+
+        /* ── Config section ── */
+        .config-layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+
+        .config-table-wrap { border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+        .config-table-wrap table thead th { cursor: default; }
+        .config-table-wrap tbody td { padding: 10px 12px; }
+        .config-table-wrap tbody td.actions { text-align: right; }
+
+        .btn-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.15s;
+            color: var(--text-2);
+        }
+        .btn-icon:hover.edit { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+        .btn-icon:hover.del { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+        /* ── Form panel ── */
+        .form-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            position: sticky;
+            top: 24px;
+        }
+        .form-panel-title { font-size: 13px; font-weight: 700; color: var(--text-1); margin-bottom: 6px; }
+        .form-panel-sub { font-size: 12px; color: var(--text-3); margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-3); }
+        .form-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-med);
+            border-radius: var(--radius-sm);
+            color: var(--text-1);
+            padding: 8px 10px;
+            font-size: 13px;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+        .form-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.10); }
+        .form-hint { font-size: 10px; color: var(--text-3); }
+        .form-divider { grid-column: 1 / -1; border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+        .form-check-group { display: flex; align-items: center; gap: 8px; }
+        .form-check { width: 15px; height: 15px; accent-color: var(--blue); cursor: pointer; }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            letter-spacing: 0.01em;
+        }
+        .btn-primary { background: var(--blue); color: #fff; }
+        .btn-primary:hover { background: #2563eb; box-shadow: 0 4px 14px rgba(59,130,246,0.35); transform: translateY(-1px); }
+        .btn-ghost { background: transparent; border: 1px solid var(--border-med); color: var(--text-2); }
+        .btn-ghost:hover { border-color: var(--text-2); color: var(--text-1); }
+        .btn-danger { background: transparent; border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+        .btn-danger:hover { background: var(--red-dim); }
+        .btn-full { width: 100%; }
+
+        /* ── Detail cards ── */
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+        .detail-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+        .detail-card-name { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 14px; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-key { color: var(--text-3); }
+        .detail-val { color: var(--text-1); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+        /* ── Alert ── */
+        .alert { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .alert-success { background: var(--green-dim); border: 1px solid rgba(16,185,129,0.3); color: var(--green); }
+        .alert-error { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+
+        /* ── Empty state ── */
+        .empty-state { text-align: center; padding: 48px 24px; color: var(--text-3); }
+        .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+        .empty-text { font-size: 13px; }
+
+        /* ── Misc ── */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+        .section-title { font-size: 14px; font-weight: 600; color: var(--text-1); }
+        .tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.04em; }
+        .tag-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+        .tag-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+        .tag-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+        .text-green { color: var(--green); }
+        .text-red { color: var(--red); }
+        .text-dim { color: var(--text-3); }
+        .mono { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+        @media (max-width: 900px) {
+            .app { padding: 24px 16px 60px; }
+            .config-layout { grid-template-columns: 1fr; }
+            .panel-row.cols-4 { grid-template-columns: 1fr 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 560px) {
+            .panel-row.cols-4 { grid-template-columns: 1fr; }
+            .barchart-label { width: 110px; }
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const DEFAULT_EQUIPMENT = [
+    { id:'sharp-bp65',    name:'Sharp BP-70M65A',        brand:'Sharp',         ppm:65,  consumoKwh:1.8,  rentaMensual:850,  costClick:0.012,  costPaper:0.02,  voltageStable:true  },
+    { id:'sharp-m487',    name:'Sharp MX-M487F',          brand:'Sharp',         ppm:48,  consumoKwh:1.2,  rentaMensual:650,  costClick:0.015,  costPaper:0.02,  voltageStable:true  },
+    { id:'ricoh-c6502',   name:'Ricoh MP C6502',          brand:'Ricoh',         ppm:65,  consumoKwh:2.1,  rentaMensual:920,  costClick:0.013,  costPaper:0.022, voltageStable:false },
+    { id:'ricoh-c3503',   name:'Ricoh MP C3503',          brand:'Ricoh',         ppm:35,  consumoKwh:1.4,  rentaMensual:680,  costClick:0.018,  costPaper:0.022, voltageStable:false },
+    { id:'kyocera-8580',  name:'Kyocera TASKalfa 8580',   brand:'Kyocera',       ppm:85,  consumoKwh:2.3,  rentaMensual:1100, costClick:0.011,  costPaper:0.02,  voltageStable:true  },
+    { id:'xerox-versant', name:'Xerox Versant 280',        brand:'Xerox',         ppm:80,  consumoKwh:2.4,  rentaMensual:1200, costClick:0.0125, costPaper:0.021, voltageStable:true  },
+    { id:'riso-vz',       name:'RISO Valezus T2200',      brand:'RISO',          ppm:220, consumoKwh:0.8,  rentaMensual:1500, costClick:0.003,  costPaper:0.015, voltageStable:true  },
+    { id:'canon-lr',      name:'Canon imageRUNNER LR',    brand:'Canon',         ppm:75,  consumoKwh:1.9,  rentaMensual:900,  costClick:0.014,  costPaper:0.021, voltageStable:true  },
+];
+
+const EMPTY_FORM = { name:'', brand:'', ppm:'', consumoKwh:'', rentaMensual:'', costClick:'', costPaper:'', voltageStable:true };
+
+const COLORS = ['#3b82f6','#10b981','#f59e0b','#a78bfa','#f472b6','#34d399','#60a5fa','#fb923c','#e879f9','#4ade80'];
+
+function fmt(v) {
+    return new Intl.NumberFormat('es-ES', { style:'currency', currency:'USD', minimumFractionDigits:0, maximumFractionDigits:0 }).format(v);
+}
+function fmtK(v) { return v >= 1000 ? `${(v/1000).toFixed(1)}k` : v; }
+
+function calcTCO(eq, volume, hours, days, elec) {
+    const monthlyHours = hours * days;
+    const rent  = eq.rentaMensual;
+    const click = (volume / 30) * eq.costClick;      // usando vol/30 como páginas/día × 30 días... hmm
+    // más correcto: volumen mensual directamente
+    const clickM = volume * eq.costClick;
+    const paperM = volume * eq.costPaper;
+    const energyM = monthlyHours * eq.consumoKwh * elec;
+    const total  = rent + clickM + paperM + energyM;
+    return {
+        id: eq.id, name: eq.name, brand: eq.brand,
+        rent, click: clickM, paper: paperM, energy: energyM, total,
+        tco12: total * 12, tco24: total * 24, tco36: total * 36,
+        kwhMes: monthlyHours * eq.consumoKwh,
+    };
+}
+
+/* ── Param input ── */
+function ParamInput({ label, value, onChange, step, prefix, suffix }) {
+    return (
+        <div className="param-group">
+            <label className="param-label">{label}</label>
+            <input
+                type="number"
+                className="param-input"
+                value={value}
+                step={step || 1}
+                onChange={e => onChange(Number(e.target.value))}
+            />
+        </div>
+    );
+}
+
+/* ── Form to add/edit equipment ── */
+function EquipForm({ initial, onSave, onCancel }) {
+    const [form, setForm] = useState(initial || EMPTY_FORM);
+    const [alert, setAlert] = useState(null);
+
+    const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+    const validate = () => {
+        if (!form.name.trim()) return 'El nombre es requerido';
+        if (!form.brand.trim()) return 'La marca es requerida';
+        if (!form.ppm || isNaN(form.ppm) || Number(form.ppm) <= 0) return 'PPM debe ser mayor a 0';
+        if (!form.consumoKwh || isNaN(form.consumoKwh)) return 'Consumo kWh requerido';
+        if (!form.rentaMensual || isNaN(form.rentaMensual)) return 'Renta mensual requerida';
+        if (!form.costClick || isNaN(form.costClick)) return 'Costo por click requerido';
+        if (!form.costPaper || isNaN(form.costPaper)) return 'Costo de papel requerido';
+        return null;
+    };
+
+    const handleSave = () => {
+        const err = validate();
+        if (err) { setAlert(err); return; }
+        const id = initial?.id || ('eq-' + Date.now());
+        onSave({
+            id,
+            name: form.name.trim(),
+            brand: form.brand.trim(),
+            ppm: Number(form.ppm),
+            consumoKwh: Number(form.consumoKwh),
+            rentaMensual: Number(form.rentaMensual),
+            costClick: Number(form.costClick),
+            costPaper: Number(form.costPaper),
+            voltageStable: form.voltageStable,
+        });
+        if (!initial) setForm(EMPTY_FORM);
+        setAlert(null);
+    };
+
+    const isEdit = !!initial;
+
+    return (
+        <div className="form-panel">
+            <div className="form-panel-title">{isEdit ? '✏️ Editar equipo' : '＋ Nuevo equipo'}</div>
+            <div className="form-panel-sub">{isEdit ? `Modificando: ${initial.name}` : 'Completa los datos del equipo a agregar'}</div>
+
+            {alert && <div className="alert alert-error">⚠ {alert}</div>}
+
+            <div className="form-grid">
+                <div className="form-group full">
+                    <label className="form-label">Nombre comercial</label>
+                    <input className="form-input" placeholder="Ej: Sharp MX-M565N" value={form.name} onChange={e => set('name', e.target.value)} />
+                </div>
+                <div className="form-group">
+                    <label className="form-label">Marca</label>
+                    <input className="form-input" placeholder="Sharp, Ricoh…" value={form.brand} onChange={e => set('brand', e.target.value)} />
+                </div>
+                <div className="form-group">
+                    <label className="form-label">PPM</label>
+                    <input className="form-input" type="number" placeholder="65" value={form.ppm} onChange={e => set('ppm', e.target.value)} />
+                </div>
+                <hr className="form-divider" />
+                <div className="form-group">
+                    <label className="form-label">Renta mensual (USD)</label>
+                    <input className="form-input" type="number" placeholder="850" value={form.rentaMensual} onChange={e => set('rentaMensual', e.target.value)} />
+                </div>
+                <div className="form-group">
+                    <label className="form-label">Consumo (kWh/hora)</label>
+                    <input className="form-input" type="number" step="0.1" placeholder="1.8" value={form.consumoKwh} onChange={e => set('consumoKwh', e.target.value)} />
+                </div>
+                <div className="form-group">
+                    <label className="form-label">Costo/click (USD/pág)</label>
+                    <input className="form-input" type="number" step="0.0001" placeholder="0.012" value={form.costClick} onChange={e => set('costClick', e.target.value)} />
+                    <span className="form-hint">Ej: 0.012 = $0.012/pág</span>
+                </div>
+                <div className="form-group">
+                    <label className="form-label">Costo papel (USD/pág)</label>
+                    <input className="form-input" type="number" step="0.001" placeholder="0.020" value={form.costPaper} onChange={e => set('costPaper', e.target.value)} />
+                </div>
+                <div className="form-group full">
+                    <label className="form-label">Voltaje estable</label>
+                    <div className="form-check-group">
+                        <input type="checkbox" className="form-check" checked={form.voltageStable} onChange={e => set('voltageStable', e.target.checked)} id="vc-check" />
+                        <label htmlFor="vc-check" style={{fontSize:'13px', color:'var(--text-2)', cursor:'pointer'}}>
+                            Incluye estabilizador / no requiere regulador externo
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div style={{marginTop:'20px', display:'flex', gap:'8px'}}>
+                <button className="btn btn-primary btn-full" onClick={handleSave}>{isEdit ? 'Guardar cambios' : 'Agregar equipo'}</button>
+                {isEdit && <button className="btn btn-ghost" onClick={onCancel} style={{flexShrink:0}}>Cancelar</button>}
+            </div>
+        </div>
+    );
+}
+
+/* ── Main app ── */
+function TCOPro() {
+    const [equipment, setEquipment] = useState(DEFAULT_EQUIPMENT);
+    const [selected, setSelected] = useState(['sharp-bp65', 'ricoh-c6502']);
+    const [volume, setVolume] = useState(50000);
+    const [hours, setHours]   = useState(8);
+    const [days, setDays]     = useState(22);
+    const [elec, setElec]     = useState(0.12);
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [editTarget, setEditTarget] = useState(null);
+    const [configAlert, setConfigAlert] = useState(null);
+
+    const selectedEquip = equipment.filter(e => selected.includes(e.id));
+    const results = useMemo(
+        () => selectedEquip.map(eq => calcTCO(eq, volume, hours, days, elec)).sort((a,b) => a.total - b.total),
+        [selectedEquip, volume, hours, days, elec]
+    );
+
+    const maxTotal = results.length ? Math.max(...results.map(r => r.total)) : 1;
+
+    const toggle = (id) => {
+        if (selected.includes(id)) {
+            if (selected.length > 1) setSelected(selected.filter(e => e !== id));
+        } else {
+            setSelected([...selected, id]);
+        }
+    };
+
+    const handleAddEquip = (eq) => {
+        setEquipment(prev => [...prev, eq]);
+        setConfigAlert({ type:'success', msg:`"${eq.name}" agregado exitosamente.` });
+        setTimeout(() => setConfigAlert(null), 3000);
+    };
+
+    const handleEditEquip = (eq) => {
+        setEquipment(prev => prev.map(e => e.id === eq.id ? eq : e));
+        setEditTarget(null);
+        setConfigAlert({ type:'success', msg:`"${eq.name}" actualizado.` });
+        setTimeout(() => setConfigAlert(null), 3000);
+    };
+
+    const handleDelete = (id) => {
+        const eq = equipment.find(e => e.id === id);
+        setEquipment(prev => prev.filter(e => e.id !== id));
+        setSelected(prev => prev.filter(s => s !== id));
+        if (editTarget?.id === id) setEditTarget(null);
+        setConfigAlert({ type:'success', msg:`"${eq?.name}" eliminado.` });
+        setTimeout(() => setConfigAlert(null), 3000);
+    };
+
+    return (
+        <div className="app">
+            {/* Header */}
+            <div className="header">
+                <div className="header-left">
+                    <span className="header-eyebrow">Herramienta comercial</span>
+                    <h1 className="header-title">TCO Pro</h1>
+                    <p className="header-sub">Comparador de Costo Total de Propiedad · Datos en tiempo real</p>
+                </div>
+                <span className="header-badge">{equipment.length} equipos · hasta 8 comparables</span>
+            </div>
+
+            {/* Params */}
+            <div className="params-bar">
+                <ParamInput label="Volumen mensual (pág)" value={volume} onChange={setVolume} />
+                <ParamInput label="Horas / día" value={hours} onChange={setHours} />
+                <ParamInput label="Días / mes" value={days} onChange={setDays} />
+                <ParamInput label="Tarifa energía ($/kWh)" value={elec} onChange={setElec} step={0.01} />
+            </div>
+
+            {/* Equipment selector */}
+            <div className="card" style={{marginBottom:'16px'}}>
+                <div className="section-header" style={{marginBottom:'14px'}}>
+                    <span className="card-title" style={{marginBottom:0}}>Equipos a comparar</span>
+                    <span className="text-dim" style={{fontSize:'12px'}}>{selected.length} seleccionados</span>
+                </div>
+                <div className="equip-grid">
+                    {equipment.map(eq => (
+                        <button key={eq.id} onClick={() => toggle(eq.id)} className={`equip-btn ${selected.includes(eq.id) ? 'active' : ''}`}>
+                            <div className="equip-btn-brand">{eq.brand}</div>
+                            <div className="equip-btn-name">{eq.name.length > 22 ? eq.name.substring(0,21)+'…' : eq.name}</div>
+                            <div className="equip-btn-ppm">{eq.ppm} ppm</div>
+                        </button>
+                    ))}
+                </div>
+                <p className="equip-count">{equipment.length} equipos disponibles · Haz clic para seleccionar / deseleccionar</p>
+            </div>
+
+            {/* Results tabs */}
+            <div className="card">
+                <div className="nav-tabs">
+                    {[
+                        { id:'dashboard',   label:'Dashboard'   },
+                        { id:'comparativa', label:'Comparativa' },
+                        { id:'detalle',     label:'Detalle'     },
+                        { id:'config',      label:'⚙ Configuración' },
+                    ].map(t => (
+                        <button key={t.id} className={`nav-tab ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
+                            {t.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* ── DASHBOARD ── */}
+                {activeTab === 'dashboard' && (
+                    <div>
+                        {results.length === 0 && <div className="empty-state"><div className="empty-icon">📊</div><div className="empty-text">Selecciona al menos un equipo para ver el análisis.</div></div>}
+
+                        {/* KPI cards */}
+                        <div className="kpi-grid">
+                            {results.map((r, idx) => (
+                                <div key={r.id} className={`kpi-card ${idx === 0 ? 'winner' : ''}`}>
+                                    {idx === 0 && <span className="kpi-winner-badge">Mejor TCO</span>}
+                                    <div className="kpi-card-brand">{r.brand}</div>
+                                    <div className="kpi-card-name">{r.name}</div>
+                                    <div className={`kpi-card-amount ${idx === 0 ? 'winner-val' : 'loser-val'}`}>{fmt(r.total)}</div>
+                                    <div className="kpi-card-label">por mes</div>
+                                    <div className="kpi-card-tco">TCO 36m: <strong>{fmt(r.tco36)}</strong></div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Bar chart */}
+                        {results.length > 0 && (
+                            <div className="card" style={{marginBottom:'16px', padding:'20px 22px', background:'var(--bg-input)'}}>
+                                <div className="section-title" style={{marginBottom:'16px'}}>Costo mensual comparado</div>
+                                {results.map((r, idx) => (
+                                    <div key={r.id} className="barchart-row">
+                                        <div className="barchart-label" title={r.name}>{r.name}</div>
+                                        <div className="barchart-track">
+                                            <div className="barchart-fill" style={{
+                                                width: `${(r.total / maxTotal) * 100}%`,
+                                                background: idx === 0 ? 'var(--green)' : COLORS[idx % COLORS.length],
+                                                opacity: idx === 0 ? 1 : 0.65,
+                                            }} />
+                                        </div>
+                                        <div className="barchart-val">{fmt(r.total)}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Cost breakdown */}
+                        {results.length > 0 && (
+                            <>
+                                <div className="section-title" style={{marginBottom:'12px'}}>Desglose de costos mensuales</div>
+                                <div className="breakdown-grid">
+                                    {results.map(r => (
+                                        <div key={r.id} className="breakdown-card">
+                                            <div className="breakdown-title">{r.name}</div>
+                                            {[
+                                                { label:'Renta', val: r.rent },
+                                                { label:'Costo/click', val: r.click },
+                                                { label:'Papel', val: r.paper },
+                                                { label:'Energía', val: r.energy },
+                                            ].map(row => (
+                                                <div key={row.label} className="breakdown-row">
+                                                    <span className="breakdown-row-label">{row.label}</span>
+                                                    <span className="breakdown-row-val">{fmt(row.val)}</span>
+                                                </div>
+                                            ))}
+                                            <div className="breakdown-total-row">
+                                                <span className="breakdown-total-label">Total</span>
+                                                <span className="breakdown-total-val">{fmt(r.total)}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {/* Recommendation */}
+                        {results.length > 1 && (
+                            <div className="reco-box">
+                                <div className="reco-title">💡 Recomendación comercial</div>
+                                <div className="reco-text">
+                                    El equipo más competitivo es <strong>{results[0].name}</strong> con <strong>{fmt(results[0].total)}/mes</strong>.
+                                    {' '}Vs {results[results.length-1].name}: ahorro de <strong>{fmt(results[results.length-1].total - results[0].total)}/mes</strong> o <strong>{fmt((results[results.length-1].total - results[0].total) * 36)} en 3 años</strong>.
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── COMPARATIVA ── */}
+                {activeTab === 'comparativa' && (
+                    <div>
+                        <div className="section-header">
+                            <span className="section-title">Análisis comparativo — ordenado por costo</span>
+                        </div>
+                        {results.length === 0
+                            ? <div className="empty-state"><div className="empty-icon">📈</div><div className="empty-text">Selecciona equipos para comparar.</div></div>
+                            : (
+                                <div className="table-wrap">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style={{width:'32px'}}>#</th>
+                                                <th>Equipo</th>
+                                                <th className="num">Mensual</th>
+                                                <th className="num">12 meses</th>
+                                                <th className="num">24 meses</th>
+                                                <th className="num">36 meses</th>
+                                                <th className="num">PPM</th>
+                                                <th className="num">kWh/mes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {results.map((r, idx) => (
+                                                <tr key={r.id} className={idx === 0 ? 'row-winner' : ''}>
+                                                    <td><span className={`rank-badge ${idx === 0 ? 'rank-1' : 'rank-n'}`}>{idx + 1}</span></td>
+                                                    <td className="bold">{r.name}</td>
+                                                    <td className={`num ${idx === 0 ? 'winner-cell' : ''}`}>{fmt(r.total)}</td>
+                                                    <td className="num">{fmt(r.tco12)}</td>
+                                                    <td className="num">{fmt(r.tco24)}</td>
+                                                    <td className={`num ${idx === 0 ? 'winner-cell' : ''}`}>{fmt(r.tco36)}</td>
+                                                    <td className="num">{equipment.find(e => e.id === r.id)?.ppm}</td>
+                                                    <td className="num">{r.kwhMes.toFixed(0)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )
+                        }
+                        {results.length > 1 && (
+                            <div style={{marginTop:'16px', padding:'14px 16px', background:'var(--blue-dim)', border:'1px solid rgba(59,130,246,0.15)', borderRadius:'var(--radius)', fontSize:'12px', color:'var(--text-2)', lineHeight:'1.6'}}>
+                                <strong style={{color:'var(--text-1)'}}>Cómo leer la tabla:</strong> Los equipos están ordenados por costo mensual de menor a mayor.
+                                Una diferencia de <strong style={{color:'var(--text-1)'}}>{fmt(results.length > 1 ? results[results.length-1].total - results[0].total : 0)}/mes</strong> entre el primero y el último se convierte en <strong style={{color:'var(--text-1)'}}>{fmt(results.length > 1 ? (results[results.length-1].total - results[0].total)*36 : 0)}</strong> en 3 años.
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── DETALLE ── */}
+                {activeTab === 'detalle' && (
+                    <div>
+                        <div className="section-title" style={{marginBottom:'16px'}}>Especificaciones técnicas y comerciales</div>
+                        {selectedEquip.length === 0
+                            ? <div className="empty-state"><div className="empty-icon">📋</div><div className="empty-text">Selecciona equipos para ver detalle.</div></div>
+                            : (
+                                <div className="detail-grid">
+                                    {selectedEquip.map(eq => (
+                                        <div key={eq.id} className="detail-card">
+                                            <div className="detail-card-name">{eq.name}</div>
+                                            {[
+                                                { k:'Marca', v: eq.brand },
+                                                { k:'PPM', v: eq.ppm },
+                                                { k:'Consumo', v: `${eq.consumoKwh} kWh/h` },
+                                                { k:'Renta mensual', v: fmt(eq.rentaMensual) },
+                                                { k:'Costo/click', v: `$${eq.costClick.toFixed(4)}` },
+                                                { k:'Costo papel', v: `$${eq.costPaper.toFixed(3)}` },
+                                                { k:'Voltaje estable', v: eq.voltageStable ? '✅ Sí' : '⚠️ No' },
+                                            ].map(row => (
+                                                <div key={row.k} className="detail-row">
+                                                    <span className="detail-key">{row.k}</span>
+                                                    <span className="detail-val">{row.v}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            )
+                        }
+                    </div>
+                )}
+
+                {/* ── CONFIGURACIÓN ── */}
+                {activeTab === 'config' && (
+                    <div>
+                        {configAlert && (
+                            <div className={`alert alert-${configAlert.type}`}>
+                                {configAlert.type === 'success' ? '✅' : '⚠'} {configAlert.msg}
+                            </div>
+                        )}
+
+                        <div className="config-layout">
+                            {/* Left: equipment table */}
+                            <div>
+                                <div className="section-header">
+                                    <span className="section-title">Equipos registrados</span>
+                                    <span className="tag tag-blue">{equipment.length} en total</span>
+                                </div>
+                                <div className="config-table-wrap">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Equipo</th>
+                                                <th className="num">PPM</th>
+                                                <th className="num">Renta</th>
+                                                <th className="num">$/click</th>
+                                                <th className="num">kWh</th>
+                                                <th>Voltaje</th>
+                                                <th style={{textAlign:'right'}}>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {equipment.map(eq => (
+                                                <tr key={eq.id} style={editTarget?.id === eq.id ? {background:'rgba(59,130,246,0.06)'} : {}}>
+                                                    <td>
+                                                        <div style={{fontWeight:600, color:'var(--text-1)', fontSize:'13px'}}>{eq.name}</div>
+                                                        <div style={{fontSize:'11px', color:'var(--text-3)', marginTop:'1px'}}>{eq.brand}</div>
+                                                    </td>
+                                                    <td className="num">{eq.ppm}</td>
+                                                    <td className="num">{fmt(eq.rentaMensual)}</td>
+                                                    <td className="num">${eq.costClick.toFixed(4)}</td>
+                                                    <td className="num">{eq.consumoKwh}</td>
+                                                    <td><span className={`tag ${eq.voltageStable ? 'tag-green' : 'tag-red'}`}>{eq.voltageStable ? 'Estable' : 'Requiere reg.'}</span></td>
+                                                    <td className="actions">
+                                                        <div style={{display:'flex', gap:'6px', justifyContent:'flex-end'}}>
+                                                            <button className="btn-icon edit" title="Editar" onClick={() => setEditTarget(editTarget?.id === eq.id ? null : eq)}>✏</button>
+                                                            <button className="btn-icon del" title="Eliminar" onClick={() => handleDelete(eq.id)}>✕</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style={{marginTop:'12px', fontSize:'12px', color:'var(--text-3)'}}>
+                                    Los equipos eliminados también se quitan de la comparación activa.
+                                </div>
+                            </div>
+
+                            {/* Right: form */}
+                            <div>
+                                {editTarget
+                                    ? <EquipForm initial={editTarget} onSave={handleEditEquip} onCancel={() => setEditTarget(null)} />
+                                    : <EquipForm onSave={handleAddEquip} />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<TCOPro />);
+</script>
+</body>
+</html>

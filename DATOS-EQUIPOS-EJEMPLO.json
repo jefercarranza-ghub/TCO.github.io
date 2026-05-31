@@ -1,0 +1,156 @@
+[
+  {
+    "id": "sharp-m565",
+    "name": "Sharp MX-M565N",
+    "brand": "Sharp",
+    "ppm": 56,
+    "consumoKwh": 1.6,
+    "rentaMensual": 750,
+    "costClick": 0.0118,
+    "costPaper": 0.02,
+    "voltageStable": true
+  },
+  {
+    "id": "sharp-m707",
+    "name": "Sharp MX-M707N",
+    "brand": "Sharp",
+    "ppm": 70,
+    "consumoKwh": 1.9,
+    "rentaMensual": 920,
+    "costClick": 0.011,
+    "costPaper": 0.02,
+    "voltageStable": true
+  },
+  {
+    "id": "ricoh-mp5055",
+    "name": "Ricoh MP C5055",
+    "brand": "Ricoh",
+    "ppm": 50,
+    "consumoKwh": 1.7,
+    "rentaMensual": 780,
+    "costClick": 0.014,
+    "costPaper": 0.022,
+    "voltageStable": false
+  },
+  {
+    "id": "ricoh-mp7502",
+    "name": "Ricoh MP C7502",
+    "brand": "Ricoh",
+    "ppm": 75,
+    "consumoKwh": 2.2,
+    "rentaMensual": 1050,
+    "costClick": 0.0125,
+    "costPaper": 0.022,
+    "voltageStable": false
+  },
+  {
+    "id": "kyocera-5570",
+    "name": "Kyocera TASKalfa 5570",
+    "brand": "Kyocera",
+    "ppm": 55,
+    "consumoKwh": 1.5,
+    "rentaMensual": 750,
+    "costClick": 0.0125,
+    "costPaper": 0.02,
+    "voltageStable": true
+  },
+  {
+    "id": "kyocera-7570",
+    "name": "Kyocera TASKalfa 7570",
+    "brand": "Kyocera",
+    "ppm": 75,
+    "consumoKwh": 1.95,
+    "rentaMensual": 980,
+    "costClick": 0.012,
+    "costPaper": 0.02,
+    "voltageStable": true
+  },
+  {
+    "id": "xerox-c225",
+    "name": "Xerox AltaLink C2255",
+    "brand": "Xerox",
+    "ppm": 55,
+    "consumoKwh": 1.7,
+    "rentaMensual": 850,
+    "costClick": 0.0135,
+    "costPaper": 0.021,
+    "voltageStable": true
+  },
+  {
+    "id": "xerox-c305",
+    "name": "Xerox AltaLink C3055",
+    "brand": "Xerox",
+    "ppm": 55,
+    "consumoKwh": 1.8,
+    "rentaMensual": 900,
+    "costClick": 0.013,
+    "costPaper": 0.021,
+    "voltageStable": true
+  },
+  {
+    "id": "konica-bizhub-754",
+    "name": "Konica Minolta bizhub 754",
+    "brand": "Konica Minolta",
+    "ppm": 75,
+    "consumoKwh": 2.0,
+    "rentaMensual": 980,
+    "costClick": 0.0128,
+    "costPaper": 0.021,
+    "voltageStable": true
+  },
+  {
+    "id": "hp-color-e77830",
+    "name": "HP Color LaserJet Enterprise E77830",
+    "brand": "HP",
+    "ppm": 77,
+    "consumoKwh": 2.1,
+    "rentaMensual": 1100,
+    "costClick": 0.0132,
+    "costPaper": 0.021,
+    "voltageStable": true
+  },
+  {
+    "id": "canon-imagerunner-dx6785",
+    "name": "Canon imageRUNNER ADVANCE DX 6785",
+    "brand": "Canon",
+    "ppm": 85,
+    "consumoKwh": 2.2,
+    "rentaMensual": 1120,
+    "costClick": 0.0128,
+    "costPaper": 0.021,
+    "voltageStable": true
+  },
+  {
+    "id": "toshiba-estudio-5506",
+    "name": "Toshiba e-STUDIO 5506AC",
+    "brand": "Toshiba",
+    "ppm": 55,
+    "consumoKwh": 1.6,
+    "rentaMensual": 800,
+    "costClick": 0.0135,
+    "costPaper": 0.021,
+    "voltageStable": false
+  },
+  {
+    "id": "riso-comcolor",
+    "name": "RISO Comcolor GD9630",
+    "brand": "RISO",
+    "ppm": 150,
+    "consumoKwh": 0.9,
+    "rentaMensual": 1200,
+    "costClick": 0.004,
+    "costPaper": 0.016,
+    "voltageStable": true
+  },
+  {
+    "id": "riso-production",
+    "name": "RISO Production System GR4795",
+    "brand": "RISO",
+    "ppm": 200,
+    "consumoKwh": 0.85,
+    "rentaMensual": 1400,
+    "costClick": 0.0032,
+    "costPaper": 0.015,
+    "voltageStable": true
+  }
+]
